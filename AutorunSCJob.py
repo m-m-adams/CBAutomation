@@ -19,7 +19,7 @@ def GetAutoruns (session):
             print('created the powershell script')
         except Exception: #already there, we think something is on the box so don't trust it
             print('script already present')
-            session.delete_file('C:\Windows\CarbonBlack\Tools\get-autoruns.ps1')
+            session.delete_file('C:\Windows\CarbonBlack\Tools\autorunsc.exe')
             session.put_file(open('.\autorunsc.exe', 'rb'), 'C:\Windows\CarbonBlack\Tools\autorunsc.exe')
             print('replaced the file')
         #run the powershell script and save stdout
@@ -46,7 +46,7 @@ def GetAutoruns (session):
         
         #clean up after ourselves
         session.delete_file('C:\Windows\CarbonBlack\Tools\autorunsc.exe')
-        print('deleted powershell script')
+        print('deleted tool')
     except Exception as err:  # Catch potential errors
         print('[ERROR] Encountered: ' + str(err) + '\n[FAILURE] Fatal error caused exit!')  # Report error    
 
