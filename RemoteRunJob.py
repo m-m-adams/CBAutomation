@@ -122,9 +122,31 @@ def RunSigCheck(Group):
         cb.live_response.submit_job(job.RunCode, sensor)
         print('job submitted')
 
+def RunOSQuery(Group,Query):
+    #tool to run - must be in local dir
+    tool='osqueryi.exe'
+    #arguments to run the tool with
+    args="--json "+Query
+    #encoding of the tools output. Most of the time it will be ANSI, autoruns is UTF16
+    code='ansi'
+    #dir to write the files to
+    output_dir='scriptoutput'
+    #extension to append on hostnames for file output
+    output_ext='_queryresults.json'
 
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
+    group=cb.select(SensorGroup).where("name:"+Group).first()
+
+    for sensor in group.sensors:
+        job=RunCodeRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
+        print(sensor.hostname)
+        cb.live_response.submit_job(job.RunCode, sensor)
+        print('job submitted')
 
 #group to search on
 Group='Default Group'
 #RunAutoruns(Group)
-RunSigCheck(Group)
+#RunSigCheck(Group)
+RunOSQuery(Group,r'''"SELECT * FROM routes WHERE destination = '::1'"''')
