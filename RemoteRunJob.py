@@ -25,7 +25,8 @@ class RunCodeRemotely(object):
         Output=self.OutputExtension
         OutputDir=self.OutputDir
         outputfile=OutputDir+'\\'+HostName+Output
-        print(localpath,remotedir,remotepath,Commandline,outputfile)
+        command=remotepath+" "+Commandline
+        #print(localpath,remotedir,remotepath,Commandline,outputfile)
         try:
             try:
                 session.create_directory(remotedir)      
@@ -43,7 +44,7 @@ class RunCodeRemotely(object):
             #HostName=HostName[1:-5]
 
             #CbLRSessionBase.create_process(command_string,wait_for_output=True,remote_output_file_name=None,working_directory=None,wait_timeout=30,wait_for_completion=True)
-            output = session.create_process(Commandline,\
+            output = session.create_process(command,\
                                             wait_for_output=True,remote_output_file_name=None,working_directory=None,wait_timeout=3600,wait_for_completion=True)
             #print('[SUCCESS] Script execution successful. Navigate to destination location for artifacts.')
             #print('[DEBUG] Script Output:\n\n', output)
@@ -72,18 +73,19 @@ class RunCodeRemotely(object):
         print("Session has been closed to hostname #" + HostName)
 
 ##CODE STARTS HERE
+Group='Default Group'
 tool='autorunsc.exe'
-command=r'''Tools\autorunsc.exe -accepteula -nobanner -a * -c -mv -s *"'''
+commands=r'''-accepteula -nobanner -a * -c -mv -s *"'''
 output_dir='scriptoutput'
 output_ext='_autoruns.csv'
 
 if not os.path.exists(output_dir):
     os.mkdir(output_dir)
 
-group=cb.select(SensorGroup).where("name:Default Group").first()
+group=cb.select(SensorGroup).where("name:"+Group).first()
 
 for sensor in group.sensors:
-    job=RunCodeRemotely(sensor.hostname,tool,command,output_dir,output_ext)
+    job=RunCodeRemotely(sensor.hostname,tool,commands,output_dir,output_ext)
     print(sensor.hostname)
     cb.live_response.submit_job(job.RunCode, sensor)
     print('job submitted')
