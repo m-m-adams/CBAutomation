@@ -10,7 +10,10 @@ repeat for scipy, pandas, cbapi, seaborn, matplotlib
 
 4. Rename the folder 'carbonblack' to '.carbonblack', then edit the api token. It's in .carbonblack\credentials.response. Replace YOUR_API_TOKEN with your api token.
 
-5. Run job scripts, they write a bunch of csv files to scriptoutput
+5. Use the script RemoteRunJob.py
+At the bottom of the script you feed it a name of the local tool to run, the directory name to output the results too, and an output extension to add to the filename. It uploads the tool to carbonblack\tools on the remote machine, runs it with the given commands, writes stdout to $outputdir\$hostname_$extension, and then deletes the tool from the remote machine.
+
+
 
 6. Use CombineAutoruns to find how frequently each entry occurs in the range
 
