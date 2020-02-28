@@ -80,7 +80,7 @@ def RunOSQuery(Group,Query,output_dir):
     #arguments to run the tool with
     args="--json "+Query
     #encoding of the tools output. Most of the time it will be ANSI, autoruns is UTF16
-    code='ansi'
+    code='utf-8'
 
     #extension to append on hostnames for file output. enter empty string to send to stdout only
     output_ext='_query.json'
