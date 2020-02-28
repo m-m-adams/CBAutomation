@@ -1,5 +1,6 @@
 import time
 import os
+import json
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
 cb = CbEnterpriseResponseAPI()
@@ -30,17 +31,6 @@ class RunCodeRemotely(object):
         encoding=self.encoding
         #print(localpath,remotedir,remotepath,Commandline,outputfile)
         try:
-##            try:
-##                session.create_directory(remotedir)      
-##            except Exception:
-##                pass  # Existed already        
-##            try:
-##                session.put_file(open(localpath, 'rb'), remotepath)
-##            except Exception: #already there, we think something is on the box so don't trust it
-##                #session.delete_file(remotepath)
-##                #session.put_file(open(localpath, 'rb'), remotepath)
-
-
             print(HostName,'trying query')
             try:
                 output = session.create_process(command,wait_for_output=True,remote_output_file_name=None,working_directory=None,wait_timeout=3600,wait_for_completion=True)
@@ -55,13 +45,15 @@ class RunCodeRemotely(object):
 
             if OutputDir != "":
                 if os.path.exists(outputfile):
-                    with open(outputfile,'a') as f:
-                        for line in text:
-                            f.write(line)
+                    with open(outputfile,'r') as f:
+                        json_data=json.load(f)
+                        print('found previous json data')
+                        json_data.append(json.loads(text))
+                    with open(outputfile,'w') as f:
+                        json.dump(json_data,f)
                 else:
                     with open(outputfile,'w') as f:
-                        for line in text:
-                            f.write(line)
+                            json.dump(json.loads(text),f)
 
                 print('wrote result to disk for further processing', HostName)
             
@@ -69,7 +61,6 @@ class RunCodeRemotely(object):
         except Exception as err:  # Catch potential errors
             print('[ERROR] Encountered: ' + str(err) + '\n[FAILURE] Fatal error caused exit!')  # Report error    
             print('unsuccessful execution on '+HostName)
-        #session.close()
         print("Session has been closed to hostname #" + HostName)
 
 ##CODE STARTS HERE
