@@ -20,13 +20,13 @@ class RunExeRemotely(object):
         Tool=self.ToolName
         Commandline=self.Commandline
 
-        localpath=os.path.join('Tools',Tool)
+        localpath=Tool
         remotedir=r'C:\Windows\CarbonBlack\Tools'
         remotepath=remotedir+"\\"+Tool
 
         Output=self.OutputExtension
         OutputDir=self.OutputDir
-        outputfile=os.path.join(OutputDir,(HostName+Output))
+        outputfile=OutputDir+'\\'+HostName+Output
         command=remotepath+" "+Commandline
         code=self.code
         #print(localpath,remotedir,remotepath,Commandline,outputfile)
@@ -85,7 +85,7 @@ def RunAutoruns(Group):
     #encoding of the tools output. Most sysinternals are UTF8, autoruns is UTF16
     code='UTF-16'
     #dir to write the files to
-    output_dir='scriptoutput'
+    output_dir='autorunsoutput'
     #extension to append on hostnames for file output
     output_ext='_autoruns.csv'
 
@@ -95,7 +95,7 @@ def RunAutoruns(Group):
     group=cb.select(SensorGroup).where("name:"+Group).first()
 
     for sensor in group.sensors:
-        job=RunExeRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
+        job=RunCodeRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
         print(sensor.hostname)
         cb.live_response.submit_job(job.RunCode, sensor)
         print('job submitted')
@@ -110,7 +110,7 @@ def RunSigCheck(Group):
     # default can be checked with [System.Text.Encoding]::Default in powershell
     code='cp1252'
     #dir to write the files to
-    output_dir='scriptoutput'
+    output_dir='signatureoutput'
     #extension to append on hostnames for file output
     output_ext='_signatures.csv'
 
@@ -128,6 +128,6 @@ def RunSigCheck(Group):
 
 #group to search on
 Group='Default Group'
-RunAutoruns(Group)
-#RunSigCheck(Group)
+#RunAutoruns(Group)
+RunSigCheck(Group)
 
