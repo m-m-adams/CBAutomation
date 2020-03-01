@@ -47,6 +47,7 @@ class RunExeRemotely(object):
             #print('[DEBUG] Script Output:\n\n', output)
             #Bypass=session.create_process('powershell.exe Set-ExecutionPolicy -executionpolicy restricted -scope currentuser')
 
+
             #retreive the file full of autoruns
             #autoruns=session.get_file(r'C:\Windows\CarbonBlack\Tools\autoruns.csv')
             #print('grabbed the artifact file')
