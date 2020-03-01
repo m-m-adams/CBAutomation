@@ -17,8 +17,7 @@ At the bottom of the script you feed it a name of the local tool to run, the dir
 
 6. Use CombineAutoruns to find how frequently each entry occurs in the range
 
-Don't use the ArtifactCapturePSJob script. It requires powershell 3 or higher, and otherwise throws errors that I haven't handled yet. Just use the autorunsc script instead for now.
-
+Don't use the ArtifactCapturePSJob script if there are computers on your network running powershell v1. It requires powershell 3 or higher to properly verify signatures. If yu run it on powershell v1, you'll have ~2000 hits as it's not possible to exlcude operating system core functions without verifying signatures.
 
 
 
