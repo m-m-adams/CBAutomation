@@ -5,7 +5,7 @@ from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
 cb = CbEnterpriseResponseAPI()
 
-class RunCodeRemotely(object):
+class RunOsQueryRemotely(object):
     def __init__(self, HostName, ToolName, Commandline,encoding,OutputDir, OutputExtension):
             self.HostName = HostName
             self.ToolName=ToolName
@@ -15,7 +15,7 @@ class RunCodeRemotely(object):
             self.encoding=encoding
             
     # sensor_id = 150  # Use this to define the sensor ID in the script, rather than using input
-    def RunCode (self, session):
+    def RunOsQuery (self, session):
         HostName=self.HostName
         Tool=self.ToolName
         Commandline=self.Commandline
@@ -82,9 +82,9 @@ def RunOSQuery(Group,Query,output_dir):
     group=cb.select(SensorGroup).where("name:"+Group).first()
 
     for sensor in group.sensors:
-        job=RunCodeRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
+        job=RunOsQueryRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
         print(sensor.hostname)
-        cb.live_response.submit_job(job.RunCode, sensor)
+        cb.live_response.submit_job(job.RunOsQuery, sensor)
         print('job submitted')
 
 #group to search on
