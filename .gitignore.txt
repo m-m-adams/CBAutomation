@@ -1,0 +1,3 @@
+.carbonblack/
+*.json
+*.csv
