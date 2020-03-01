@@ -6,11 +6,12 @@ from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 cb = CbEnterpriseResponseAPI()
 
 class RunShRemotely(object):
-    def __init__(self, HostName, Commandline,OutputDir, OutputExtension):
+    def __init__(self, HostName, Commandline,OutputDir, OutputExtension, encoding):
             self.HostName = HostName
             self.Commandline=Commandline
             self.OutputDir=OutputDir
             self.OutputExtension=OutputExtension
+            self.encoding=encoding
             
     # sensor_id = 150  # Use this to define the sensor ID in the script, rather than using input
     def RunSh (self, session):
@@ -19,7 +20,7 @@ class RunShRemotely(object):
         Output=self.OutputExtension
         OutputDir=self.OutputDir
         outputfile=os.path.join(OutputDir,(HostName+Output))
-        encoding='cp1252'
+        encoding=self.encoding
         #print(localpath,remotedir,remotepath,Commandline,outputfile)
         try:
             print(HostName,'trying command')
@@ -50,8 +51,8 @@ def RunShell(Group,Command):
     #Group to run on, Query to run, Dir to output to. Leave dir as empty string to send to stdout
     #arguments to run the tool with
     args=Command
-    #extension to append on hostnames for file output. enter empty string to send to stdout only
-    output_ext='_result.json'
+    #extension to append on hostnames for file output. enter empty string for outputdir to send to stdout only
+    output_ext='_result.csv'
     output_dir="shelloutput"
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
@@ -59,7 +60,12 @@ def RunShell(Group,Command):
     group=cb.select(SensorGroup).where("name:"+Group).first()
 
     for sensor in group.sensors:
-        job=RunShRemotely(sensor.hostname,args,output_dir,output_ext)
+        if sensor.os.startswith('Windows'):
+            encoding='cp1252'
+        else:
+            encoding='utf-8'
+        print(encoding)
+        job=RunShRemotely(sensor.hostname,args,output_dir,output_ext,encoding)
         print(sensor.hostname)
         cb.live_response.submit_job(job.RunSh, sensor)
         print('job submitted')
