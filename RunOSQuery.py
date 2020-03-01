@@ -26,7 +26,7 @@ class RunOsQueryRemotely(object):
 
         Output=self.OutputExtension
         OutputDir=self.OutputDir
-        outputfile=OutputDir+'\\'+HostName+Output
+        outputfile=os.path.join(OutputDir,(HostName+Output))
         command=remotepath+" "+Commandline
         encoding=self.encoding
         #print(localpath,remotedir,remotepath,Commandline,outputfile)
@@ -64,20 +64,20 @@ class RunOsQueryRemotely(object):
         print("Session has been closed to hostname #" + HostName)
 
 ##CODE STARTS HERE
-def RunOSQuery(Group,Query,output_dir):
+def RunOSQuery(Group,Query):
     #Group to run on, Query to run, Dir to output to. Leave dir as empty string to send to stdout
     #tool to run - must be in local dir
     tool='osqueryi.exe'
     #arguments to run the tool with
     args="--json "+Query
-    #encoding of the tools output. Most of the time it will be ANSI, autoruns is UTF16
+    #encoding of the tools output.
     code='utf-8'
 
     #extension to append on hostnames for file output. enter empty string to send to stdout only
     output_ext='_query.json'
-    if output_dir!="":
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
+    output_dir="osqueryoutput"
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
 
     group=cb.select(SensorGroup).where("name:"+Group).first()
 
@@ -91,4 +91,4 @@ def RunOSQuery(Group,Query,output_dir):
 Group='Default Group'
 #RunAutoruns(Group)
 #RunSigCheck(Group)
-RunOSQuery(Group,r'''"SELECT * FROM startup_items "''',"osqueryoutput")
+RunOSQuery(Group,r'''"SELECT * FROM startup_items "''')
