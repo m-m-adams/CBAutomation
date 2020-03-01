@@ -20,13 +20,13 @@ class RunExeRemotely(object):
         Tool=self.ToolName
         Commandline=self.Commandline
 
-        localpath=Tool
+        localpath=os.path.join('Tools',Tool)
         remotedir=r'C:\Windows\CarbonBlack\Tools'
         remotepath=remotedir+"\\"+Tool
 
         Output=self.OutputExtension
         OutputDir=self.OutputDir
-        outputfile=OutputDir+'\\'+HostName+Output
+        outputfile=os.path.join(OutputDir,(HostName+Output))
         command=remotepath+" "+Commandline
         code=self.code
         #print(localpath,remotedir,remotepath,Commandline,outputfile)
@@ -95,7 +95,7 @@ def RunAutoruns(Group):
     group=cb.select(SensorGroup).where("name:"+Group).first()
 
     for sensor in group.sensors:
-        job=RunCodeRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
+        job=RunExeRemotely(sensor.hostname,tool,args,code,output_dir,output_ext)
         print(sensor.hostname)
         cb.live_response.submit_job(job.RunCode, sensor)
         print('job submitted')
@@ -128,6 +128,6 @@ def RunSigCheck(Group):
 
 #group to search on
 Group='Default Group'
-#RunAutoruns(Group)
-RunSigCheck(Group)
+RunAutoruns(Group)
+#RunSigCheck(Group)
 

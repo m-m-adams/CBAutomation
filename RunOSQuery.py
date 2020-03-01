@@ -20,7 +20,7 @@ class RunOsQueryRemotely(object):
         Tool=self.ToolName
         Commandline=self.Commandline
 
-        localpath=Tool
+        localpath=os.path.join('Tools',Tool)
         remotedir=r'C:\Windows\CarbonBlack\Tools'
         remotepath=remotedir+"\\"+Tool
 
