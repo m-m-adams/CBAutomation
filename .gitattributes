@@ -1,2 +1,3 @@
 Tools/* linguist-vendored
 PSScripts/* linguist-vendored
+*.ps1 linguist-vendored
