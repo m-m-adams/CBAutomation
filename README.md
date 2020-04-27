@@ -1,5 +1,4 @@
-# KnockoffOSQuery
-Abusing the CB live response API
+# Automated IR tasks
 1. This requires python 3. If you're on windows, install python3 (and remove 2 because it's deprecated) and do the module imports with pip. If you're on linux, install python3 and then do the imports with pip3. Keep python2 because it's probably a dependency for something.
 
 2. Install dependencies:
