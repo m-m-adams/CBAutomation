@@ -3,7 +3,7 @@ import os
 import json
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
-cb = CbEnterpriseResponseAPI()
+
 
 class RunShRemotely(object):
     def __init__(self, HostName, Commandline,OutputDir, OutputExtension, encoding):
@@ -69,9 +69,10 @@ def RunShell(Group,Command):
         print(sensor.hostname)
         cb.live_response.submit_job(job.RunSh, sensor)
         print('job submitted')
-
-#group to search on
-Group='Default Group'
-#RunAutoruns(Group)
-#RunSigCheck(Group)
-RunShell(Group,r'''powershell.exe import-module bitstransfer; get-bitstransfer -allusers|foreach {$_}|ConvertTo-csv -notypeinformation''')
+if __name__ == '__main__':
+    cb = CbEnterpriseResponseAPI()
+    #group to search on
+    Group='Default Group'
+    #RunAutoruns(Group)
+    #RunSigCheck(Group)
+    RunShell(Group,r'''powershell.exe import-module bitstransfer; get-bitstransfer -allusers|foreach {$_}|ConvertTo-csv -notypeinformation''')

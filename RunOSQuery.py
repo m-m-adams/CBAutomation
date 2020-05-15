@@ -3,7 +3,7 @@ import os
 import json
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
-cb = CbEnterpriseResponseAPI()
+
 
 class RunOsQueryRemotely(object):
     def __init__(self, HostName, ToolName, Commandline,encoding,OutputDir, OutputExtension):
@@ -87,8 +87,10 @@ def RunOSQuery(Group,Query):
         cb.live_response.submit_job(job.RunOsQuery, sensor)
         print('job submitted')
 
-#group to search on
-Group='Default Group'
-#RunAutoruns(Group)
-#RunSigCheck(Group)
-RunOSQuery(Group,r'''"SELECT * FROM startup_items "''')
+if __name__ == '__main__':
+    cb = CbEnterpriseResponseAPI()
+    #group to search on
+    Group='Default Group'
+    #RunAutoruns(Group)
+    #RunSigCheck(Group)
+    RunOSQuery(Group,r'''"SELECT * FROM startup_items "''')

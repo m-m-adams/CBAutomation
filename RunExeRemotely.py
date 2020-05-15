@@ -3,8 +3,6 @@ import os
 import codecs 
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
-cb = CbEnterpriseResponseAPI()
-
 class RunExeRemotely(object):
     def __init__(self, HostName, ToolName, Commandline,code,OutputDir, OutputExtension):
             self.HostName = HostName
@@ -41,21 +39,15 @@ class RunExeRemotely(object):
                 session.delete_file(remotepath)
                 session.put_file(open(localpath, 'rb'), remotepath)
 
-            #run the powershell script and save stdout
-            #HostName=session.create_process(r'''powershell.exe $env:computername''')
-            #HostName=str(HostName).strip('b')
-            #HostName=HostName[1:-5]
+
             print(HostName,'tool is executing')
-            #CbLRSessionBase.create_process(command_string,wait_for_output=True,remote_output_file_name=None,working_directory=None,wait_timeout=30,wait_for_completion=True)
             output = session.create_process(command,\
                                             wait_for_output=True,remote_output_file_name=None,working_directory=None,wait_timeout=3600,wait_for_completion=True)
-            #print('[SUCCESS] Script execution successful. Navigate to destination location for artifacts.')
-            #print('[DEBUG] Script Output:\n\n', output)
+
             print(HostName,'tool is finished')
 
             #retreive the file full of autoruns
-            #autoruns=session.get_file(r'C:\Windows\CarbonBlack\Tools\autoruns.csv')
-            #print('grabbed the artifact file')
+
             text = codecs.decode(output,encoding=code,errors='replace')
             print('converted to text')
             if os.path.exists(outputfile):
@@ -125,9 +117,10 @@ def RunSigCheck(Group):
         cb.live_response.submit_job(job.RunCode, sensor)
         print('job submitted')
 
-
-#group to search on
-Group='Default Group'
-RunAutoruns(Group)
-#RunSigCheck(Group)
+if __name__ == '__main__':
+    cb = CbEnterpriseResponseAPI()
+    #group to search on
+    Group='Default Group'
+    RunAutoruns(Group)
+    #RunSigCheck(Group)
 

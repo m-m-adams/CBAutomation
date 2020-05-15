@@ -3,7 +3,7 @@ import os
 import codecs 
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
-cb = CbEnterpriseResponseAPI()
+
 
 class RunExeRemotely(object):
     def __init__(self, HostName,scriptname,code,OutputDir, OutputExtension):
@@ -96,8 +96,9 @@ def RunPowershell(Group):
         cb.live_response.submit_job(job.RunCode, sensor)
         print('job submitted')
 
-
-#group to search on
-Group='Default Group'
-RunPowershell(Group)
+if __name__ == '__main__':
+    cb = CbEnterpriseResponseAPI()
+    #group to search on
+    Group='Default Group'
+    RunPowershell(Group)
 
