@@ -5,7 +5,7 @@ from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
 
 
-class RunExeRemotely(object):
+class RunPSScriptRemotely(object):
     def __init__(self, HostName,scriptname,code,OutputDir, OutputExtension):
             self.HostName = HostName
             self.scriptname=scriptname
@@ -14,7 +14,7 @@ class RunExeRemotely(object):
             self.code=code
             
     # sensor_id = 150  # Use this to define the sensor ID in the script, rather than using input
-    def RunCode (self, session):
+    def RunPSScript (self, session):
         HostName=self.HostName
         script=self.scriptname
 
@@ -91,9 +91,9 @@ def RunPowershell(Group):
     group=cb.select(SensorGroup).where("name:"+Group).first()
 
     for sensor in group.sensors:
-        job=RunExeRemotely(sensor.hostname,script,code,output_dir,output_ext)
+        job=RunPSScriptRemotely(sensor.hostname,script,code,output_dir,output_ext)
         print(sensor.hostname)
-        cb.live_response.submit_job(job.RunCode, sensor)
+        cb.live_response.submit_job(job.RunPSScript, sensor)
         print('job submitted')
 
 if __name__ == '__main__':
