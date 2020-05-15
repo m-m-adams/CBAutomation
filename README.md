@@ -1,5 +1,4 @@
-# KnockoffOSQuery
-Abusing the CB live response API
+# Automated IR tasks
 1. This requires python 3. If you're on windows, install python3 (and remove 2 because it's deprecated) and do the module imports with pip. If you're on linux, install python3 and then do the imports with pip3. Keep python2 because it's probably a dependency for something.
 
 2. Install dependencies:
@@ -17,7 +16,7 @@ At the bottom of the script you feed it a name of the local tool to run, the dir
 
 6. The combination scripts are used find how frequently each entry occurs in the group. Things that are only on one or two machines are suspicious, but could also just indicate that the machine is behind on patching (expecially for sigcheck)
 
-Don't use the ArtifactCapturePSJob script if there are computers on your network running powershell v1. It requires powershell 3 or higher to properly verify signatures. If yu run it on powershell v1, you'll have ~2000 hits as it's not possible to exlcude operating system core functions without verifying signatures.
+Don't use the ArtifactCapturePSJob script if there are computers on your network running powershell v1. It requires powershell 3 to run and v4 or higher to properly verify signatures. If yu run it on earlier versions, you'll have ~2000 hits as it's not possible to exlcude operating system core functions without verifying signatures.
 
 
 
