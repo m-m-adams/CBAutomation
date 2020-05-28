@@ -2,10 +2,10 @@
 import time
 import os
 import codecs 
-from RunRemotely import RunRemotely
+from LiveResponse.RunRemotely import RunRemotely
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
-def RunAutoruns(Group):
+def RunAutoruns(cb, Group):
     #tool to run ()
     tool=r'.\Tools\autorunsc.exe'
     #arguments to run the tool with
@@ -28,7 +28,7 @@ def RunAutoruns(Group):
         cb.live_response.submit_job(job.Run, sensor)
         print('job submitted')
 
-def RunSigCheck(Group):
+def RunSigCheck(cb, Group):
     #tool to run - must be in local dir
     tool='Tools/sigcheck.exe'
     #arguments to run the tool with
@@ -54,7 +54,7 @@ def RunSigCheck(Group):
         print('job submitted')
 
 
-def RunOSQuery(Group,Query):
+def RunOSQuery(cb, Group, Query):
     #Group to run on, Query to run, Dir to output to. Leave dir as empty string to send to stdout
     #tool to run - must be in local dir
     tool='Tools/osqueryi.exe'
@@ -76,7 +76,7 @@ def RunOSQuery(Group,Query):
         cb.live_response.submit_job(job.Run, sensor)
         print('job submitted')
 
-def RunPowershell(Group):
+def RunPowershell(cb, Group):
     #script to run - must be in PSScripts dir
     script='PSScripts/get-autoruns.ps1'
 
@@ -105,5 +105,5 @@ if __name__ == '__main__':
     cb = CbEnterpriseResponseAPI()
     #group to search on
     Group='Default Group'
-    RunOSQuery(Group, r'''"SELECT * FROM startup_items "''')
+    RunOSQuery(cb, Group, r'''"SELECT * FROM startup_items "''')
     #RunSigCheck(Group)
