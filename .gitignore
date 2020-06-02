@@ -1,3 +1,4 @@
 .carbonblack/
 *.json
 *.csv
+*.exe
