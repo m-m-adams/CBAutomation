@@ -28,7 +28,7 @@ bin_df['freq_score'] = np.log(bin_df['host_count'] / 2000)
 
 bin_df_hosts = bin_df.explode('endpoint')
 
-host_likelihood = bin_df_hosts[bin_df_hosts['signed'] != 'Signed'].groupby('endpoint')['freq_score'].sum().sort_values()
+host_likelihood = bin_df_hosts[bin_df_hosts['signed'] != 'Signed'].groupby('endpoint')['freq_score'].mean().sort_values()
 
 
 
