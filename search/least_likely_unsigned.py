@@ -2,8 +2,12 @@
 import pandas as pd
 import numpy as np
 import math
+from datetime import datetime, timedelta
+import pytz
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup, Process, Binary
 
+def trim_hostname(hostname):
+    return hostname.split('|')[0].upper()
     
 #%%
 cb=CbEnterpriseResponseAPI()
@@ -30,5 +34,22 @@ bin_df_hosts = bin_df.explode('endpoint')
 
 host_likelihood = bin_df_hosts[bin_df_hosts['signed'] != 'Signed'].groupby('endpoint')['freq_score'].mean().sort_values()
 
+host_binaries = bin_df_hosts[bin_df_hosts['signed'] != 'Signed'][['observed_filename', 'endpoint']].groupby('endpoint').aggregate(lambda x: tuple(x))
+
+host_likelihood = host_likelihood.to_frame()
+host_likelihood['hostname'] = host_likelihood.index.map(trim_hostname)
+
+host_likelihood = host_likelihood.merge(host_binaries, on='endpoint')
+#%%
+
+sensors = cb.select(Sensor)
+
+sensor_list=[]
+for sensor in sensors:
+    if sensor.last_update > pytz.utc.localize(datetime.today()):
+        sensor_list.append(sensor.computer_name.upper())
+    
+#%%
+host_likelihood = host_likelihood[host_likelihood['hostname'].isin(sensor_list)]
 
 
