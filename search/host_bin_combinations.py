@@ -5,14 +5,14 @@ import math
 import pytz
 from datetime import datetime, timedelta
 from sklearn.feature_extraction import DictVectorizer
-from sklearn.ensemble import IsolationForest
+from sklearn.neighbors import LocalOutlierFactor
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup, Process, Binary
 
 def trim_hostname(hostname):
     return hostname.split('|')[0].upper()
 
 def list_to_dict(ls):
-    return dict((item,1) for item in ls)
+    return dict((el,1) for el in ls)
 
 def recent_checkins():
     sensor_list=[]
@@ -22,7 +22,26 @@ def recent_checkins():
             if sensor.group.id != 33: 
                 sensor_list.append(sensor.computer_name.upper())
     return sensor_list
+
+def find_common_features(hd):
+    # make a list of binaries which are identical to a previous binary
+    to_drop = []
+    for i in range(len(hd[0,:])):
+        distance_vector = hd[:max(i-1,0),i]
+        matches = [i for i, e in enumerate(distance_vector) if e == 0]
+        if matches:
+            to_drop.append(i)
+    return to_drop
+
+def obs_to_logprobabilites(obs_matrix):
+    for i in range(len(obs_matrix[0,:])):
+        nhosts = len(obs_matrix[:,0])
+        total = np.sum(obs_matrix[:,i])
+        probability = np.log(total/nhosts)
+        obs_matrix[:,i] *= probability
+
 #%%
+
 cb=CbEnterpriseResponseAPI()
 
 query = cb.select(Binary)
@@ -36,7 +55,7 @@ for binary in query:
 
 bin_df = pd.DataFrame(bin_list)
 
-#%%
+
 # produce a list of unique host/binary combinations. 
 bin_df_hosts = bin_df.explode('endpoint')
 
@@ -56,7 +75,7 @@ sensors = cb.select(Sensor)
 sensor_list = recent_checkins()
 host_binaries = host_binaries[host_binaries['hostname'].isin(sensor_list)]
 
-#%%
+
 # convert the dataframe to an np matrix with host rows and md5 columns
 # 1 corresponds to match, 0 is no match
 
@@ -69,16 +88,39 @@ hosts = host_binaries.index
 
 #%%
 #take hamming distance - in this case is the number of different binaries
-hd = (2 * np.inner(host_binary_observations-0.5, 0.5-host_binary_observations) + host_binary_observations.shape[1] / 2)
+hd = (2 * np.inner(host_binary_observations.T-0.5, 0.5-host_binary_observations.T) + host_binary_observations.T.shape[1] / 2)
 
 # this is a matrix of correlation coefficients
 corr = abs(np.corrcoef(host_binary_observations))
 
 # make a new dataframe of host to their average correlation with all other hosts
 # small values here are "more unique"
-corr_means=pd.DataFrame(means, index=labels).sort_values()
+means = np.mean(corr, axis=1)
+corr_means=pd.DataFrame(means, index=hosts)
 
 # add back in binary names as a reference for the analyst
 corr_means = corr_means.join(host_filenames)
 
-#%%
+#%% uncommon binaries have scores above -1
+# clf = LocalOutlierFactor(n_neighbors=3)
+# outlier_labels = clf.fit_predict(host_binary_observations.T)
+
+# neighbor_distance = pd.DataFrame(clf.negative_outlier_factor_, index=labels)
+
+
+to_drop = find_common_features(hd)
+
+
+# remove binaries with a hit based on the hamming distance
+more_unique = np.delete(host_binary_observations, to_drop, axis=1)
+
+unique_binaries = [v for i, v in enumerate(labels) if i not in to_drop]
+
+
+# go through the array and replace 1s with the binaries log frequency
+obs_to_logprobabilites(more_unique)
+
+host_probabilities = sum(more_unique.T)   
+
+host_probs = pd.DataFrame(host_probabilities, index=hosts)
+
