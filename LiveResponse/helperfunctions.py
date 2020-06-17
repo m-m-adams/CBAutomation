@@ -3,6 +3,8 @@ import time
 import os
 import codecs 
 from LiveResponse.RunRemotely import RunRemotely
+from LiveResponse.CombineAutoruns import combine_count_autoruns
+from concurrent.futures import _base, wait
 from cbapi.response import CbEnterpriseResponseAPI, Sensor, SensorGroup
 
 def RunAutoruns(cb, Group):
@@ -84,7 +86,7 @@ def RunPowershell(cb, Group):
     # default can be checked with [System.Text.Encoding]::Default in powershell
     code='cp1252'
     #dir to write the files to
-    output_dir='powershelloutput'
+    output_dir='powershelloutput_'+Group
     #extension to append on hostnames for file output
     output_ext='_psautoruns.csv'
 
@@ -92,18 +94,18 @@ def RunPowershell(cb, Group):
         os.mkdir(output_dir)
 
     group=cb.select(SensorGroup).where("name:"+Group).first()
-
+    print(group)
+    futures = []
     for sensor in group.sensors:
         # def __init__(self, HostName, ToolName='', Commandline='',code='UTF-8', OutputDir='Results', OutputExtension='.csv', remove=True, use_existing=False):
         job=RunRemotely(sensor.hostname,script,code=code,OutputDir=output_dir,OutputExtension=output_ext)
         print(sensor.hostname)
-        cb.live_response.submit_job(job.Run, sensor)
+        futures.append(cb.live_response.submit_job(job.Run, sensor))
         print('job submitted')
-
-
+    wait(futures)
+#%%
 if __name__ == '__main__':
-    cb = CbEnterpriseResponseAPI()
-    #group to search on
-    Group='Default Group'
-    RunOSQuery(cb, Group, r'''"SELECT * FROM startup_items "''')
-    #RunSigCheck(Group)
+    
+    cb=CbEnterpriseResponseAPI()
+    RunPowershell(cb, "X80")
+    combine_count_autoruns(r'Q:/CBAutomation-master/powershelloutput_X87', 'combined_psautoruns.xlsx', '_psautoruns.csv')
