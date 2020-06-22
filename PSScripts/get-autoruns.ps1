@@ -1,4 +1,4 @@
-﻿Function Get-PSAutorun {
+Function Get-PSAutorun {
 <#
     .SYNOPSIS
         Get Autorun entries.
@@ -2597,4 +2597,5 @@ Process {
 }
 End {}
 }
-Get-PSAutorun -Logon -ShowFileHash -VerifyDigitalSignature |? { -not $_.IsOSBinary }|convertto-Csv -NoTypeInformation
+
+Get-PSAutorun -All -ShowFileHash -VerifyDigitalSignature -ErrorAction SilentlyContinue -WarningAction SilentlyContinue|? { -not $_.IsOSBinary }|convertto-Csv -NoTypeInformation
